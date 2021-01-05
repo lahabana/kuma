@@ -12,6 +12,8 @@ import (
 	"strings"
 	"text/template"
 
+	envoy_bootstrap_v3 "github.com/envoyproxy/go-control-plane/envoy/config/bootstrap/v3"
+
 	"github.com/kumahq/kuma/pkg/core/resources/model"
 	"github.com/kumahq/kuma/pkg/core/resources/model/rest"
 	"github.com/kumahq/kuma/pkg/core/validators"
@@ -229,6 +231,8 @@ func (b *bootstrapGenerator) configForParameters(params configParameters) (proto
 	switch b.config.APIVersion {
 	case envoy_common.APIV2:
 		return b.configForParametersV2(params)
+	case envoy_common.APIV3:
+		return b.configForParametersV3(params)
 	default:
 		return nil, errors.Errorf("invalid API Version %s", b.config.APIVersion)
 	}
@@ -244,6 +248,25 @@ func (b *bootstrapGenerator) configForParametersV2(params configParameters) (pro
 		return nil, errors.Wrap(err, "failed to render config template")
 	}
 	config := &envoy_bootstrap_v2.Bootstrap{}
+	if err := util_proto.FromYAML(buf.Bytes(), config); err != nil {
+		return nil, errors.Wrap(err, "failed to parse bootstrap config")
+	}
+	if err := config.Validate(); err != nil {
+		return nil, errors.Wrap(err, "Envoy bootstrap config is not valid")
+	}
+	return config, nil
+}
+
+func (b *bootstrapGenerator) configForParametersV3(params configParameters) (proto.Message, error) {
+	tmpl, err := template.New("bootstrap").Parse(configTemplateV3)
+	if err != nil {
+		return nil, errors.Wrap(err, "failed to parse config template")
+	}
+	var buf bytes.Buffer
+	if err := tmpl.Execute(&buf, params); err != nil {
+		return nil, errors.Wrap(err, "failed to render config template")
+	}
+	config := &envoy_bootstrap_v3.Bootstrap{}
 	if err := util_proto.FromYAML(buf.Bytes(), config); err != nil {
 		return nil, errors.Wrap(err, "failed to parse bootstrap config")
 	}
