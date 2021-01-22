@@ -12,6 +12,7 @@ import (
 const (
 	// Mandatory tag that has a reserved meaning in Kuma.
 	ServiceTag     = "kuma.io/service"
+	DomainTag     = "kuma.io/domain"
 	ServiceUnknown = "unknown"
 
 	// Locality related tags

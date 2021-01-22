@@ -61,6 +61,7 @@ var SupportedProtocols = ProtocolList{
 
 // Service that indicates L4 pass through cluster
 const PassThroughService = "pass_through"
+const DNSService = "dns"
 
 var IPv4Loopback = net.IPv4(127, 0, 0, 1)
 

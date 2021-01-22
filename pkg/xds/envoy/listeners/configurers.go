@@ -162,6 +162,49 @@ func OutboundListener(listenerName string, address string, port uint32) Listener
 	})
 }
 
+func DnsFilter(dnsConfig *mesh_proto.DnsFilterConfig) ListenerBuilderOpt {
+	return ListenerBuilderOptFunc(func(config *ListenerBuilderConfig) {
+		config.AddV3(&v3.DnsFilterConfigurer{Config: dnsConfig})
+		config.AddV2(&v2.DnsFilterConfigurer{Config: dnsConfig})
+	})
+}
+
+// TODO merge with OutboundListener
+func UdpOutboundListener(listenerName string, address string, port uint32) ListenerBuilderOpt {
+	return ListenerBuilderOptFunc(func(config *ListenerBuilderConfig) {
+		config.AddV2(&v2.OutboundListenerConfigurer{
+			ListenerName: listenerName,
+			Address:      address,
+			Port:         port,
+			Protocol:     mesh_proto.UDP,
+		})
+		config.AddV3(&v3.OutboundListenerConfigurer{
+			ListenerName: listenerName,
+			Address:      address,
+			Port:         port,
+			Protocol:     mesh_proto.UDP,
+		})
+	})
+}
+
+// TODO merge with InboundListener
+func UdpInboundListener(listenerName string, address string, port uint32) ListenerBuilderOpt {
+	return ListenerBuilderOptFunc(func(config *ListenerBuilderConfig) {
+		config.AddV2(&v2.InboundListenerConfigurer{
+			ListenerName: listenerName,
+			Address:      address,
+			Port:         port,
+			Protocol:     mesh_proto.UDP,
+		})
+		config.AddV3(&v3.InboundListenerConfigurer{
+			ListenerName: listenerName,
+			Address:      address,
+			Port:         port,
+			Protocol:     mesh_proto.UDP,
+		})
+	})
+}
+
 func TransparentProxying(transparentProxying *mesh_proto.Dataplane_Networking_TransparentProxying) ListenerBuilderOpt {
 	virtual := transparentProxying.GetRedirectPortOutbound() != 0 && transparentProxying.GetRedirectPortInbound() != 0
 	return ListenerBuilderOptFunc(func(config *ListenerBuilderConfig) {

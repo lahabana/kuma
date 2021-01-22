@@ -16,6 +16,10 @@ func GetOutboundListenerName(address string, port uint32) string {
 	return fmt.Sprintf("outbound:%s:%d", address, port)
 }
 
+func GetDnsListenerName() string {
+	return "kuma:dns"
+}
+
 func GetInboundRouteName(service string) string {
 	return fmt.Sprintf("inbound:%s", service)
 }
