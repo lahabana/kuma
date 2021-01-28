@@ -117,7 +117,10 @@ func (d *DataplaneWatchdog) syncDataplane() error {
 
 // syncIngress synces state of Ingress Dataplane. Notice that it does not use Mesh Hash yet because Ingress supports many Meshes.
 func (d *DataplaneWatchdog) syncIngress() error {
-	envoyCtx := d.xdsContextBuilder.buildContext(d.streamId)
+	envoyCtx, err := d.xdsContextBuilder.buildMeshedContext(d.streamId, d.key.Mesh, d.lastHash)
+	if err != nil {
+		return err
+	}
 	proxy, err := d.ingressProxyBuilder.build(d.key, d.streamId)
 	if err != nil {
 		return err

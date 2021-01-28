@@ -1,6 +1,7 @@
 package v3
 
 import (
+	"fmt"
 	envoy_core "github.com/envoyproxy/go-control-plane/envoy/config/core/v3"
 	envoy_grpc_credential "github.com/envoyproxy/go-control-plane/envoy/config/grpc_credential/v3"
 	envoy_tls "github.com/envoyproxy/go-control-plane/envoy/extensions/transport_sockets/tls/v3"
@@ -24,7 +25,7 @@ func CreateDownstreamTlsContext(ctx xds_context.Context, metadata *core_xds.Data
 		return nil, nil
 	}
 	validationSANMatcher := MeshSpiffeIDPrefixMatcher(ctx.Mesh.Resource.Meta.GetName())
-	commonTlsContext, err := createCommonTlsContext(ctx, metadata, validationSANMatcher)
+	commonTlsContext, err := createCommonTlsContext(ctx, metadata, validationSANMatcher, ServiceSpiffeIDMatcher("default", "ingress"))
 	if err != nil {
 		return nil, err
 	}
@@ -46,7 +47,26 @@ func CreateUpstreamTlsContext(ctx xds_context.Context, metadata *core_xds.Datapl
 		return nil, nil
 	}
 	var validationSANMatcher *envoy_type_matcher.StringMatcher
-	if upstreamService == "*" {
+	if ctx.Mesh.Resource.Meta.GetName() == "default" {
+		if upstreamService == "*" {
+			validationSANMatcher = &envoy_type_matcher.StringMatcher{
+				MatchPattern: &envoy_type_matcher.StringMatcher_Prefix{
+					Prefix: "spiffe://",
+				},
+			}
+		} else {
+			validationSANMatcher = &envoy_type_matcher.StringMatcher{
+				MatchPattern: &envoy_type_matcher.StringMatcher_SafeRegex{
+					SafeRegex: &envoy_type_matcher.RegexMatcher{
+						EngineType: &envoy_type_matcher.RegexMatcher_GoogleRe2{
+							GoogleRe2: &envoy_type_matcher.RegexMatcher_GoogleRE2{},
+						},
+						Regex: fmt.Sprintf("spiffe://[^/]+/%s", upstreamService),
+					},
+				},
+			}
+		}
+	} else if upstreamService == "*" {
 		validationSANMatcher = MeshSpiffeIDPrefixMatcher(ctx.Mesh.Resource.Meta.GetName())
 	} else {
 		validationSANMatcher = ServiceSpiffeIDMatcher(ctx.Mesh.Resource.Meta.GetName(), upstreamService)
@@ -61,7 +81,7 @@ func CreateUpstreamTlsContext(ctx xds_context.Context, metadata *core_xds.Datapl
 	}, nil
 }
 
-func createCommonTlsContext(ctx xds_context.Context, metadata *core_xds.DataplaneMetadata, validationSANMatcher *envoy_type_matcher.StringMatcher) (*envoy_tls.CommonTlsContext, error) {
+func createCommonTlsContext(ctx xds_context.Context, metadata *core_xds.DataplaneMetadata, validationSANMatcher ...*envoy_type_matcher.StringMatcher) (*envoy_tls.CommonTlsContext, error) {
 	meshCaSecret, err := sdsSecretConfig(ctx, tls.MeshCaResource, metadata)
 	if err != nil {
 		return nil, err
@@ -74,7 +94,7 @@ func createCommonTlsContext(ctx xds_context.Context, metadata *core_xds.Dataplan
 		ValidationContextType: &envoy_tls.CommonTlsContext_CombinedValidationContext{
 			CombinedValidationContext: &envoy_tls.CommonTlsContext_CombinedCertificateValidationContext{
 				DefaultValidationContext: &envoy_tls.CertificateValidationContext{
-					MatchSubjectAltNames: []*envoy_type_matcher.StringMatcher{validationSANMatcher},
+					MatchSubjectAltNames: validationSANMatcher,
 				},
 				ValidationContextSdsSecretConfig: meshCaSecret,
 			},

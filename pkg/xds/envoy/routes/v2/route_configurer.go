@@ -3,12 +3,14 @@ package v2
 import (
 	envoy_route "github.com/envoyproxy/go-control-plane/envoy/api/v2/route"
 	envoy_type_matcher "github.com/envoyproxy/go-control-plane/envoy/type/matcher"
+	"github.com/kumahq/kuma/pkg/xds/envoy"
+	envoy_metadata "github.com/kumahq/kuma/pkg/xds/envoy/metadata/v2"
 )
 
 type RoutesConfigurer struct {
 	MatchPath    string
 	NewPath      string
-	Cluster      string
+	Cluster      envoy.ClusterSubset
 	AllowGetOnly bool
 }
 
@@ -33,6 +35,7 @@ func (c RoutesConfigurer) Configure(virtualHost *envoy_route.VirtualHost) error 
 		},
 		Action: &envoy_route.Route_Route{
 			Route: &envoy_route.RouteAction{
+				MetadataMatch: envoy_metadata.LbMetadata(c.Cluster.Tags),
 				RegexRewrite: &envoy_type_matcher.RegexMatchAndSubstitute{
 					Pattern: &envoy_type_matcher.RegexMatcher{
 						EngineType: &envoy_type_matcher.RegexMatcher_GoogleRe2{
@@ -43,7 +46,7 @@ func (c RoutesConfigurer) Configure(virtualHost *envoy_route.VirtualHost) error 
 					Substitution: c.NewPath,
 				},
 				ClusterSpecifier: &envoy_route.RouteAction_Cluster{
-					Cluster: c.Cluster,
+					Cluster: c.Cluster.ClusterName,
 				},
 			},
 		},

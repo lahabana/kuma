@@ -67,7 +67,7 @@ func TagsHeader(tags mesh_proto.MultiValueTagSet) RouteConfigurationBuilderOpt {
 	})
 }
 
-func Route(matchPath, newPath, cluster string, allowGetOnly bool) VirtualHostBuilderOpt {
+func Route(matchPath, newPath string, cluster envoy_common.ClusterSubset, allowGetOnly bool) VirtualHostBuilderOpt {
 	return VirtualHostBuilderOptFunc(func(config *VirtualHostBuilderConfig) {
 		config.AddV2(&v2.RoutesConfigurer{
 			MatchPath:    matchPath,

@@ -144,9 +144,29 @@ func (d *DataplaneReconciler) generateSnapshot(dataplane *mesh_core.DataplaneRes
 		return envoy_cache.Snapshot{}, errors.Wrap(err, "could not get Dataplane cert pair")
 	}
 
-	caSecret, err := d.meshCaProvider.Get(context.Background(), dataplane.GetMeta().GetMesh())
-	if err != nil {
-		return envoy_cache.Snapshot{}, errors.Wrap(err, "could not get mesh CA cert")
+	meshes := mesh_core.MeshResourceList{}
+	if mesh.Meta.GetName() == "default" {
+		// Add all the CAs
+		if err := d.readOnlyResManager.List(context.Background(), &meshes); err != nil {
+			return envoy_cache.Snapshot{}, err
+		}
+	} else {
+		// Only add current and default mesh CA
+		defaultMesh := &mesh_core.MeshResource{}
+		if err := d.readOnlyResManager.Get(context.Background(), defaultMesh, core_store.GetByKey("default", core_model.NoMesh)); err != nil {
+			return envoy_cache.Snapshot{}, err
+		}
+		meshes.Items = append(meshes.Items, mesh, defaultMesh)
+	}
+	caSecret := &core_xds.CaSecret{}
+	for _, mesh := range meshes.Items {
+		if mesh.MTLSEnabled() {
+			ca, err := d.meshCaProvider.Get(context.Background(), mesh.Meta.GetName())
+			if err != nil {
+				return envoy_cache.Snapshot{}, err
+			}
+			caSecret.PemCerts = append(caSecret.PemCerts, ca.PemCerts...)
+		}
 	}
 
 	version := fmt.Sprintf("%d;%s", core.Now().UTC().UnixNano(), mesh.GetEnabledCertificateAuthorityBackend().Name)
