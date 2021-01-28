@@ -37,7 +37,7 @@ var _ = Describe("ServerMtlsConfigurer", func() {
 			listener, err := NewListenerBuilder(envoy_common.APIV3).
 				Configure(InboundListener(given.listenerName, given.listenerAddress, given.listenerPort, given.listenerProtocol)).
 				Configure(FilterChain(NewFilterChainBuilder(envoy_common.APIV3).
-					Configure(ServerSideMTLS(given.ctx, &given.metadata)).
+					Configure(ServerSideMTLS(given.ctx, &given.metadata, false)).
 					Configure(TcpProxy(given.statsName, given.clusters...)))).
 				Build()
 			// then

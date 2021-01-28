@@ -29,7 +29,7 @@ var _ = Describe("CreateDownstreamTlsContext()", func() {
 			metadata := &core_xds.DataplaneMetadata{}
 
 			// when
-			snippet, err := v3.CreateDownstreamTlsContext(ctx, metadata)
+			snippet, err := v3.CreateDownstreamTlsContext(ctx, metadata, false)
 			// then
 			Expect(err).ToNot(HaveOccurred())
 			// and
@@ -75,7 +75,7 @@ var _ = Describe("CreateDownstreamTlsContext()", func() {
 				}
 
 				// when
-				snippet, err := v3.CreateDownstreamTlsContext(ctx, given.metadata)
+				snippet, err := v3.CreateDownstreamTlsContext(ctx, given.metadata, false)
 				// then
 				Expect(err).ToNot(HaveOccurred())
 				// when
@@ -264,7 +264,7 @@ var _ = Describe("CreateUpstreamTlsContext()", func() {
 			metadata := &core_xds.DataplaneMetadata{}
 
 			// when
-			snippet, err := v3.CreateUpstreamTlsContext(ctx, metadata, "backend", "backend")
+			snippet, err := v3.CreateUpstreamTlsContext(ctx, metadata, "", "backend", "backend")
 			// then
 			Expect(err).ToNot(HaveOccurred())
 			// and
@@ -311,7 +311,7 @@ var _ = Describe("CreateUpstreamTlsContext()", func() {
 				}
 
 				// when
-				snippet, err := v3.CreateUpstreamTlsContext(ctx, given.metadata, given.upstreamService, "")
+				snippet, err := v3.CreateUpstreamTlsContext(ctx, given.metadata, "", given.upstreamService, "")
 				// then
 				Expect(err).ToNot(HaveOccurred())
 				// when

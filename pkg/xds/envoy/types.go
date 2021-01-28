@@ -107,6 +107,18 @@ func WithExternalService(isExternalService bool) NewClusterOpt {
 	})
 }
 
+type HeaderMatch struct {
+	Header     string
+	ExactMatch string
+	RegexMatch string
+	Present    *bool
+}
+
+type StaticResponse struct {
+	Status uint32
+	Body   []byte
+}
+
 type Tags map[string]string
 type TagsSlice []Tags
 type TagKeys []string

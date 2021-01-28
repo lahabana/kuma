@@ -77,9 +77,19 @@ func (b *builtinCaManager) create(ctx context.Context, mesh string, backend *mes
 		}
 		opts = append(opts, withExpirationTime(duration))
 	}
-	keyPair, err := newRootCa(mesh, int(cfg.GetCaCert().GetRSAbits().GetValue()), opts...)
-	if err != nil {
-		return errors.Wrapf(err, "failed to generate a Root CA cert for Mesh %q", mesh)
+	var keyPair *core_ca.KeyPair
+	if mesh != "default" && backend.Name == "koyeb-custom" {
+		kp, err := b.getCa(ctx, "default", backend.Name)
+		if err != nil {
+			return errors.Wrapf(err, "failed to retrieve ca from default mesh this shouldn't happen")
+		}
+		keyPair = &kp
+	} else {
+		var err error
+		keyPair, err = newRootCa(mesh, int(cfg.GetCaCert().GetRSAbits().GetValue()), opts...)
+		if err != nil {
+			return errors.Wrapf(err, "failed to generate a Root CA cert for Mesh %q", mesh)
+		}
 	}
 
 	certSecret := &core_system.SecretResource{

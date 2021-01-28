@@ -393,6 +393,16 @@ func (d *Dataplane) IsIngress() bool {
 	return d.Networking.Ingress != nil
 }
 
+func (d *Dataplane) IsPublicIngressGateway() bool {
+	if !d.IsIngress() {
+		return false
+	}
+	if len(d.GetNetworking().Inbound) == 0 {
+		return false
+	}
+	return d.GetNetworking().Inbound[0].Tags["koyeb.com/publicgateway"] != ""
+}
+
 func (d *Dataplane) HasPublicAddress() bool {
 	if d.Networking.Ingress == nil {
 		return false

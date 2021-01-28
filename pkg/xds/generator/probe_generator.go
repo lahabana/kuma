@@ -1,6 +1,7 @@
 package generator
 
 import (
+	envoy_common "github.com/kumahq/kuma/pkg/xds/envoy"
 	"github.com/pkg/errors"
 
 	model "github.com/kumahq/kuma/pkg/core/xds"
@@ -35,7 +36,7 @@ func (g ProbeProxyGenerator) Generate(ctx xds_context.Context, proxy *model.Prox
 	for _, endpoint := range probes.Endpoints {
 		if portSet[endpoint.InboundPort] {
 			virtualHostBuilder.Configure(
-				envoy_routes.Route(endpoint.Path, endpoint.InboundPath, names.GetLocalClusterName(endpoint.InboundPort), true))
+				envoy_routes.Route(endpoint.Path, endpoint.InboundPath, envoy_common.NewCluster(envoy_common.WithName(names.GetLocalClusterName(endpoint.InboundPort))), true))
 		} else {
 			// On Kubernetes we are overriding probes for every container, but there is no guarantee that given
 			// probe will have an equivalent in inbound interface (ex. sidecar that is not selected by any service).

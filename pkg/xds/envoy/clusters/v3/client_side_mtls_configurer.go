@@ -18,6 +18,7 @@ type ClientSideMTLSConfigurer struct {
 	Ctx           xds_context.Context
 	Metadata      *core_xds.DataplaneMetadata
 	ClientService string
+	Mesh          string
 	Tags          []envoy.Tags
 }
 
@@ -63,7 +64,7 @@ func (c *ClientSideMTLSConfigurer) Configure(cluster *envoy_cluster.Cluster) err
 }
 
 func (c *ClientSideMTLSConfigurer) createTransportSocket(sni string) (*envoy_core.TransportSocket, error) {
-	tlsContext, err := envoy_tls.CreateUpstreamTlsContext(c.Ctx, c.Metadata, c.ClientService, sni)
+	tlsContext, err := envoy_tls.CreateUpstreamTlsContext(c.Ctx, c.Metadata, c.Mesh, c.ClientService, sni)
 	if err != nil {
 		return nil, err
 	}

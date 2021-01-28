@@ -28,6 +28,9 @@ type IngressGenerator struct {
 
 func (i IngressGenerator) Generate(ctx xds_context.Context, proxy *model.Proxy) (*model.ResourceSet, error) {
 	resources := model.NewResourceSet()
+	if proxy.Dataplane.Spec.IsPublicIngressGateway() {
+		return resources, nil
+	}
 
 	destinationsPerService := i.destinations(proxy.Routing.TrafficRouteList)
 

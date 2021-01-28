@@ -7,12 +7,11 @@ import (
 	envoy_core "github.com/envoyproxy/go-control-plane/envoy/api/v2/core"
 
 	core_xds "github.com/kumahq/kuma/pkg/core/xds"
-	"github.com/kumahq/kuma/pkg/xds/envoy/tls"
 )
 
-func CreateIdentitySecret(secret *core_xds.IdentitySecret) *envoy_auth.Secret {
+func CreateIdentitySecret(name string, secret *core_xds.IdentitySecret) *envoy_auth.Secret {
 	return &envoy_auth.Secret{
-		Name: tls.IdentityCertResource,
+		Name: name,
 		Type: &envoy_auth.Secret_TlsCertificate{
 			TlsCertificate: &envoy_auth.TlsCertificate{
 				CertificateChain: &envoy_core.DataSource{

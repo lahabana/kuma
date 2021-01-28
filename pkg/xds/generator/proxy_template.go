@@ -82,7 +82,7 @@ func NewDefaultProxyProfile() ResourceGenerator {
 
 func init() {
 	RegisterProfile(mesh_core.ProfileDefaultProxy, NewDefaultProxyProfile())
-	RegisterProfile(IngressProxy, CompositeResourceGenerator{AdminProxyGenerator{}, IngressGenerator{}})
+	RegisterProfile(IngressProxy, CompositeResourceGenerator{AdminProxyGenerator{}, IngressGenerator{}, PublicGatewayGenerator{}})
 }
 
 func RegisterProfile(profileName string, generator ResourceGenerator) {

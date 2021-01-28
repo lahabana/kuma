@@ -67,7 +67,7 @@ func TagsHeader(tags mesh_proto.MultiValueTagSet) RouteConfigurationBuilderOpt {
 	})
 }
 
-func Route(matchPath, newPath, cluster string, allowGetOnly bool) VirtualHostBuilderOpt {
+func Route(matchPath, newPath string, cluster envoy_common.Cluster, allowGetOnly bool) VirtualHostBuilderOpt {
 	return VirtualHostBuilderOptFunc(func(config *VirtualHostBuilderConfig) {
 		config.AddV2(&v2.RoutesConfigurer{
 			MatchPath:    matchPath,
@@ -80,6 +80,60 @@ func Route(matchPath, newPath, cluster string, allowGetOnly bool) VirtualHostBui
 			NewPath:      newPath,
 			Cluster:      cluster,
 			AllowGetOnly: allowGetOnly,
+		})
+	})
+}
+
+func ClusterHeader(matchPath string, clusterHeader string) VirtualHostBuilderOpt {
+	var t = true
+	return VirtualHostBuilderOptFunc(func(config *VirtualHostBuilderConfig) {
+		config.AddV2(&v2.RoutesConfigurer{
+			Headers: []envoy_common.HeaderMatch{
+				{Header: clusterHeader, Present: &t},
+			},
+			MatchPath:     matchPath,
+			ClusterHeader: clusterHeader,
+		})
+		config.AddV3(&v3.RoutesConfigurer{
+			Headers: []envoy_common.HeaderMatch{
+				{Header: clusterHeader, Present: &t},
+			},
+			MatchPath:     matchPath,
+			ClusterHeader: clusterHeader,
+		})
+	})
+}
+
+func Headers(matchPath string, headers []envoy_common.HeaderMatch, cluster envoy_common.Cluster) VirtualHostBuilderOpt {
+	return VirtualHostBuilderOptFunc(func(config *VirtualHostBuilderConfig) {
+		config.AddV2(&v2.RoutesConfigurer{
+			MatchPath: matchPath,
+			Cluster:   cluster,
+			Headers:   headers,
+		})
+		config.AddV3(&v3.RoutesConfigurer{
+			MatchPath: matchPath,
+			Cluster:   cluster,
+			Headers:   headers,
+		})
+	})
+}
+
+func StaticResponse(matchPath string, status uint32, body []byte) VirtualHostBuilderOpt {
+	return VirtualHostBuilderOptFunc(func(config *VirtualHostBuilderConfig) {
+		config.AddV2(&v2.RoutesConfigurer{
+			MatchPath: matchPath,
+			StaticResponse: &envoy_common.StaticResponse{
+				Status: status,
+				Body:   body,
+			},
+		})
+		config.AddV3(&v3.RoutesConfigurer{
+			MatchPath: matchPath,
+			StaticResponse: &envoy_common.StaticResponse{
+				Status: status,
+				Body:   body,
+			},
 		})
 	})
 }

@@ -5,6 +5,7 @@ import (
 	"crypto/x509"
 	"encoding/pem"
 	"fmt"
+	"github.com/kumahq/kuma/pkg/xds/envoy/tls"
 	"sync"
 	"time"
 
@@ -188,9 +189,19 @@ func (d *DataplaneReconciler) generateSnapshot(dataplane *mesh_core.DataplaneRes
 
 	resources := envoy_cache.SnapshotResources{
 		Secrets: []envoy_types.Resource{
-			envoy_secrets.CreateIdentitySecret(identitySecret),
-			envoy_secrets.CreateCaSecret(caSecret),
+			envoy_secrets.CreateIdentitySecret(tls.IdentityCertResource, identitySecret),
+			envoy_secrets.CreateCaSecret(tls.MeshCaResource, caSecret),
 		},
+	}
+
+	if mesh.Meta.GetName() == "default" {
+		gatewayIdentitySecret, gatewayCaSecret, err := tls.ReadGatewaySecrets()
+		if err != nil {
+			return envoy_cache.Snapshot{}, snapshotInfo{}, err
+		}
+		if gatewayIdentitySecret != nil {
+			resources.Secrets = append(resources.Secrets, envoy_secrets.CreateIdentitySecret(tls.GatewayCertResource, gatewayIdentitySecret), envoy_secrets.CreateCaSecret(tls.GatewayCaResource, gatewayCaSecret))
+		}
 	}
 	snaphot := envoy_cache.NewSnapshotWithResources(core.NewUUID(), resources)
 	return snaphot, info, nil

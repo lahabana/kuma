@@ -12,14 +12,15 @@ import (
 )
 
 type ServerSideMTLSConfigurer struct {
-	Ctx      xds_context.Context
-	Metadata *core_xds.DataplaneMetadata
+	Ctx             xds_context.Context
+	Metadata        *core_xds.DataplaneMetadata
+	IsPublicIngress bool
 }
 
 var _ FilterChainConfigurer = &ServerSideMTLSConfigurer{}
 
 func (c *ServerSideMTLSConfigurer) Configure(filterChain *envoy_listener.FilterChain) error {
-	tlsContext, err := tls.CreateDownstreamTlsContext(c.Ctx, c.Metadata)
+	tlsContext, err := tls.CreateDownstreamTlsContext(c.Ctx, c.Metadata, c.IsPublicIngress)
 	if err != nil {
 		return err
 	}

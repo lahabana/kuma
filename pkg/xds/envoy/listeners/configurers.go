@@ -83,15 +83,17 @@ func StaticTlsEndpoints(virtualHostName string, keyPair *tls.KeyPair, paths []*e
 	})
 }
 
-func ServerSideMTLS(ctx xds_context.Context, metadata *core_xds.DataplaneMetadata) FilterChainBuilderOpt {
+func ServerSideMTLS(ctx xds_context.Context, metadata *core_xds.DataplaneMetadata, isPublicIngress bool) FilterChainBuilderOpt {
 	return FilterChainBuilderOptFunc(func(config *FilterChainBuilderConfig) {
 		config.AddV2(&v2.ServerSideMTLSConfigurer{
-			Ctx:      ctx,
-			Metadata: metadata,
+			Ctx:             ctx,
+			Metadata:        metadata,
+			IsPublicIngress: isPublicIngress,
 		})
 		config.AddV3(&v3.ServerSideMTLSConfigurer{
-			Ctx:      ctx,
-			Metadata: metadata,
+			Ctx:             ctx,
+			Metadata:        metadata,
+			IsPublicIngress: isPublicIngress,
 		})
 	})
 }

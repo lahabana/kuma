@@ -43,6 +43,25 @@ func ClientSideMTLS(ctx xds_context.Context, metadata *core_xds.DataplaneMetadat
 	})
 }
 
+func CrossMeshClientSideMTLS(ctx xds_context.Context, metadata *core_xds.DataplaneMetadata, mesh string) ClusterBuilderOpt {
+	return ClusterBuilderOptFunc(func(config *ClusterBuilderConfig) {
+		config.AddV2(&v2.ClientSideMTLSConfigurer{
+			Ctx:           ctx,
+			Metadata:      metadata,
+			ClientService: "*",
+			Tags:          nil,
+			Mesh:          mesh,
+		})
+		config.AddV3(&v3.ClientSideMTLSConfigurer{
+			Ctx:           ctx,
+			Metadata:      metadata,
+			ClientService: "*",
+			Tags:          nil,
+			Mesh:          mesh,
+		})
+	})
+}
+
 // UnknownDestinationClientSideMTLS configures cluster with mTLS for a mesh but without extensive destination verification (only Mesh is verified)
 func UnknownDestinationClientSideMTLS(ctx xds_context.Context, metadata *core_xds.DataplaneMetadata) ClusterBuilderOpt {
 	return ClusterBuilderOptFunc(func(config *ClusterBuilderConfig) {
