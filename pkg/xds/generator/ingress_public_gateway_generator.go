@@ -2,6 +2,7 @@ package generator
 
 import (
 	"fmt"
+	"github.com/golang/protobuf/ptypes/wrappers"
 	mesh_proto "github.com/kumahq/kuma/api/mesh/v1alpha1"
 	core_mesh "github.com/kumahq/kuma/pkg/core/resources/apis/mesh"
 	model "github.com/kumahq/kuma/pkg/core/xds"
@@ -12,12 +13,52 @@ import (
 	envoy_listeners "github.com/kumahq/kuma/pkg/xds/envoy/listeners"
 	envoy_names "github.com/kumahq/kuma/pkg/xds/envoy/names"
 	envoy_routes "github.com/kumahq/kuma/pkg/xds/envoy/routes"
+	"google.golang.org/protobuf/types/known/durationpb"
 	"sort"
+	"time"
 )
 
 const (
 	OriginGateway = "public-gateway"
 )
+
+var defaultRetryPolicy = core_mesh.RetryResource{
+	Spec: &mesh_proto.Retry{
+		Conf: &mesh_proto.Retry_Conf{
+			Http: &mesh_proto.Retry_Conf_Http{
+				NumRetries: &wrappers.UInt32Value{
+					Value: 3,
+				},
+				// Required even if empty
+				RetriableStatusCodes: []uint32{},
+			},
+		},
+	},
+}
+
+var defaultCircuitBreaker = core_mesh.CircuitBreakerResource{
+	Spec: &mesh_proto.CircuitBreaker{
+		Conf: &mesh_proto.CircuitBreaker_Conf{
+			Thresholds: &mesh_proto.CircuitBreaker_Conf_Thresholds{
+				MaxConnections:     &wrappers.UInt32Value{Value: 1024},
+				MaxPendingRequests: &wrappers.UInt32Value{Value: 1024},
+				MaxRequests:        &wrappers.UInt32Value{Value: 1024},
+				MaxRetries:         &wrappers.UInt32Value{Value: 3},
+			},
+			SplitExternalAndLocalErrors: true,
+			BaseEjectionTime:            durationpb.New(120 * time.Second),
+			MaxEjectionPercent:          &wrappers.UInt32Value{Value: 80},
+			Detectors: &mesh_proto.CircuitBreaker_Conf_Detectors{
+				LocalErrors: &mesh_proto.CircuitBreaker_Conf_Detectors_Errors{Consecutive: &wrappers.UInt32Value{Value: 5}},
+				Failure: &mesh_proto.CircuitBreaker_Conf_Detectors_Failure{
+					RequestVolume: &wrappers.UInt32Value{Value: 5},
+					MinimumHosts:  &wrappers.UInt32Value{Value: 1},
+					Threshold:     &wrappers.UInt32Value{Value: 85},
+				},
+			},
+		},
+	},
+}
 
 type PublicGatewayGenerator struct {
 }
@@ -105,7 +146,10 @@ func (i PublicGatewayGenerator) generateLDS(
 			Configure(envoy_listeners.HttpConnectionManager(inboundListenerName, true)).
 			Configure(envoy_listeners.HttpStaticRoute(
 				envoy_routes.NewRouteConfigurationBuilder(apiVersion).
-					Configure(envoy_routes.VirtualHost(virtualHostBuilder)))))).
+					Configure(envoy_routes.VirtualHost(virtualHostBuilder))),
+			).
+			Configure(envoy_listeners.Retry(&defaultRetryPolicy, core_mesh.ProtocolHTTP)).
+			Configure(envoy_listeners.MaxConnectAttempts(&defaultRetryPolicy)))).
 		Build()
 }
 
@@ -146,6 +190,9 @@ func (i PublicGatewayGenerator) generateCDS(
 				Configure(envoy_clusters.EdsCluster(clusterName)).
 				Configure(envoy_clusters.CrossMeshClientSideMTLS(ctx, proxy.Metadata, route.Mesh)).
 				Configure(envoy_clusters.LbSubset(tagKeySlice)).
+				Configure(envoy_clusters.CircuitBreaker(&defaultCircuitBreaker)).
+				Configure(envoy_clusters.OutlierDetection(&defaultCircuitBreaker)).
+				Configure(envoy_clusters.Timeout(core_mesh.ProtocolTCP, &mesh_proto.Timeout_Conf{ConnectTimeout: durationpb.New(250 * time.Millisecond)})).
 				Build()
 			if err != nil {
 				return nil, err
