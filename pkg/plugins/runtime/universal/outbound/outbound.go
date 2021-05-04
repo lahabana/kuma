@@ -96,7 +96,7 @@ func (v *VIPOutboundsReconciler) UpdateVIPOutbounds(ctx context.Context) error {
 			if dp.Spec.Networking.GetTransparentProxying() == nil || dp.Spec.IsIngress() {
 				continue
 			}
-			newOutbounds := dns.VIPOutbounds(model.MetaToResourceKey(dp.Meta), allDps, v.resolver.GetVIPs(), externalServices.Items)
+			newOutbounds := dns.VIPOutbounds(model.MetaToResourceKey(dp.Meta), allDps, v.resolver.GetVIPs(), externalServices.Items, v.resolver.GetDomain())
 
 			if outboundsEqual(newOutbounds, dp.Spec.Networking.Outbound) {
 				continue

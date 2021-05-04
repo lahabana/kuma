@@ -72,7 +72,7 @@ var _ = Describe("VIPOutbounds", func() {
 		}
 
 		// when
-		outbounds := dns.VIPOutbounds(model.MetaToResourceKey(dataplane.Meta), dataplanes.Items, vipList, externalServices.Items)
+		outbounds := dns.VIPOutbounds(model.MetaToResourceKey(dataplane.Meta), dataplanes.Items, vipList, externalServices.Items, "mesh")
 		// and
 		Expect(outbounds).To(HaveLen(5))
 		// and
@@ -141,7 +141,7 @@ var _ = Describe("VIPOutbounds", func() {
 		}
 
 		// when
-		outbounds := dns.VIPOutbounds(model.MetaToResourceKey(dataplane.Meta), dataplanes.Items, vipList, externalServices.Items)
+		outbounds := dns.VIPOutbounds(model.MetaToResourceKey(dataplane.Meta), dataplanes.Items, vipList, externalServices.Items, "mesh")
 		// and
 		Expect(outbounds).To(HaveLen(1))
 		// and
@@ -234,48 +234,58 @@ var _ = Describe("VIPOutbounds", func() {
 		vipList["third-external-service"] = "240.0.0.8"
 
 		actual := &mesh_proto.Dataplane_Networking{}
-		actual.Outbound = dns.VIPOutbounds(model.MetaToResourceKey(dataplane.Meta), otherDataplanes, vipList, externalServices)
+		actual.Outbound = dns.VIPOutbounds(model.MetaToResourceKey(dataplane.Meta), otherDataplanes, vipList, externalServices, "mesh")
 
 		expected := `
      outbound:
       - address: 240.0.0.6
         port: 1234
+        hostname: first-external-service.mesh
         tags:
           kuma.io/service: first-external-service
       - address: 240.0.0.6
         port: 80
+        hostname: first-external-service.mesh
         tags:
           kuma.io/service: first-external-service
       - address: 240.0.0.7
         port: 4321
+        hostname: second-external-service.mesh
         tags:
           kuma.io/service: second-external-service
       - address: 240.0.0.7
         port: 80
+        hostname: second-external-service.mesh
         tags:
           kuma.io/service: second-external-service
       - address: 240.0.0.1
         port: 80
+        hostname: service-1.mesh
         tags:
           kuma.io/service: service-1
       - address: 240.0.0.2
         port: 80
+        hostname: service-2.mesh
         tags:
           kuma.io/service: service-2
       - address: 240.0.0.3
         port: 80
+        hostname: service-3.mesh
         tags:
           kuma.io/service: service-3
       - address: 240.0.0.4
         port: 80
+        hostname: service-4.mesh
         tags:
           kuma.io/service: service-4
       - address: 240.0.0.5
         port: 80
+        hostname: service-5.mesh
         tags:
           kuma.io/service: service-5
       - address: 240.0.0.8
         port: 80
+        hostname: third-external-service.mesh
         tags:
           kuma.io/service: third-external-service
 `

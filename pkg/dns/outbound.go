@@ -1,8 +1,11 @@
 package dns
 
 import (
+	"fmt"
 	"sort"
 	"strconv"
+
+	"github.com/asaskevich/govalidator"
 
 	"github.com/kumahq/kuma/pkg/core/resources/model"
 
@@ -21,10 +24,12 @@ func VIPOutbounds(
 	dataplanes []*core_mesh.DataplaneResource,
 	vips vips.List,
 	externalServices []*core_mesh.ExternalServiceResource,
+	defaultDomain string,
 ) []*mesh_proto.Dataplane_Networking_Outbound {
 	type vipEntry struct {
-		ip   string
-		port uint32
+		ip       string
+		port     uint32
+		hostname string
 	}
 	serviceVIPMap := map[string]vipEntry{}
 	services := []string{}
@@ -37,7 +42,7 @@ func VIPOutbounds(
 					if _, found := serviceVIPMap[inService]; !found {
 						vip, err := ForwardLookup(vips, inService)
 						if err == nil {
-							serviceVIPMap[inService] = vipEntry{vip, VIPListenPort}
+							serviceVIPMap[inService] = vipEntry{vip, VIPListenPort, fmt.Sprintf("%s.%s", inService, defaultDomain)}
 							services = append(services, inService)
 						}
 					}
@@ -49,7 +54,7 @@ func VIPOutbounds(
 				if _, found := serviceVIPMap[inService]; !found {
 					vip, err := ForwardLookup(vips, inService)
 					if err == nil {
-						serviceVIPMap[inService] = vipEntry{vip, VIPListenPort}
+						serviceVIPMap[inService] = vipEntry{vip, VIPListenPort, fmt.Sprintf("%s.%s", inService, defaultDomain)}
 						services = append(services, inService)
 					}
 				}
@@ -69,7 +74,11 @@ func VIPOutbounds(
 				} else {
 					p32 = uint32(p64)
 				}
-				serviceVIPMap[inService] = vipEntry{vip, p32}
+				hostname := fmt.Sprintf("%s.%s", inService, defaultDomain)
+				if govalidator.IsDNSName(externalService.Spec.GetHost()) {
+					hostname = externalService.Spec.GetHost()
+				}
+				serviceVIPMap[inService] = vipEntry{vip, p32, hostname}
 				services = append(services, inService)
 			}
 		}
@@ -80,17 +89,19 @@ func VIPOutbounds(
 	for _, service := range services {
 		entry := serviceVIPMap[service]
 		outbounds = append(outbounds, &mesh_proto.Dataplane_Networking_Outbound{
-			Address: entry.ip,
-			Port:    entry.port,
-			Tags:    map[string]string{mesh_proto.ServiceTag: service},
+			Address:  entry.ip,
+			Hostname: entry.hostname,
+			Port:     entry.port,
+			Tags:     map[string]string{mesh_proto.ServiceTag: service},
 		})
 
 		// todo (lobkovilya): backwards compatibility, could be deleted in the next major release Kuma 1.2.x
 		if entry.port != VIPListenPort {
 			outbounds = append(outbounds, &mesh_proto.Dataplane_Networking_Outbound{
-				Address: entry.ip,
-				Port:    VIPListenPort,
-				Tags:    map[string]string{mesh_proto.ServiceTag: service},
+				Address:  entry.ip,
+				Hostname: entry.hostname,
+				Port:     VIPListenPort,
+				Tags:     map[string]string{mesh_proto.ServiceTag: service},
 			})
 		}
 	}

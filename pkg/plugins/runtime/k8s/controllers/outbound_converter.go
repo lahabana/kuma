@@ -24,6 +24,7 @@ func (p *PodConverter) OutboundInterfacesFor(
 	others []*mesh_k8s.Dataplane,
 	externalServices []*mesh_k8s.ExternalService,
 	vips vips.List,
+	domain string,
 ) ([]*mesh_proto.Dataplane_Networking_Outbound, error) {
 	var outbounds []*mesh_proto.Dataplane_Networking_Outbound
 	dataplanes := []*core_mesh.DataplaneResource{}
@@ -89,7 +90,7 @@ func (p *PodConverter) OutboundInterfacesFor(
 		Mesh: MeshFor(pod),
 		Name: pod.Name,
 	}
-	outbounds = append(outbounds, dns.VIPOutbounds(resourceKey, dataplanes, vips, externalServicesRes)...)
+	outbounds = append(outbounds, dns.VIPOutbounds(resourceKey, dataplanes, vips, externalServicesRes, domain)...)
 	return outbounds, nil
 }
 
