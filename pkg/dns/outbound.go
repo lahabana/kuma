@@ -2,10 +2,14 @@ package dns
 
 import (
 	"fmt"
+
 	"sort"
 	"strconv"
+	"strings"
 
 	"github.com/asaskevich/govalidator"
+
+	"github.com/kumahq/kuma/pkg/core"
 
 	"github.com/kumahq/kuma/pkg/core/resources/model"
 
@@ -16,6 +20,8 @@ import (
 	mesh_proto "github.com/kumahq/kuma/api/mesh/v1alpha1"
 	core_mesh "github.com/kumahq/kuma/pkg/core/resources/apis/mesh"
 )
+
+var dnsOutboundGeneratorLog = core.Log.WithName("dns-outbound-generator")
 
 const VIPListenPort = uint32(80)
 
@@ -115,4 +121,173 @@ func ForwardLookup(vips vips.List, service string) (string, error) {
 		return "", errors.Errorf("service [%s] not found", service)
 	}
 	return ip, nil
+}
+
+func VirtualOutbounds(
+	resourceKey model.ResourceKey,
+	dataplanes []*core_mesh.DataplaneResource,
+	externalServices []*core_mesh.ExternalServiceResource,
+	virtualOutbounds []*core_mesh.VirtualOutboundResource,
+	cidr string,
+) ([]*mesh_proto.Dataplane_Networking_Outbound, error) {
+	var tagSets []map[string]string
+	var self *core_mesh.DataplaneResource
+	for _, dataplane := range dataplanes {
+		if model.MetaToResourceKey(dataplane.Meta) == resourceKey {
+			self = dataplane
+		}
+		if dataplane.Spec.IsIngress() {
+			for _, inbound := range dataplane.Spec.Networking.Ingress.AvailableServices {
+				if inbound.Mesh == resourceKey.Mesh {
+					tagSets = append(tagSets, inbound.Tags)
+				}
+			}
+		} else {
+			for _, inbound := range dataplane.Spec.Networking.Inbound {
+				tagSets = append(tagSets, inbound.Tags)
+			}
+		}
+	}
+	for _, externalService := range externalServices {
+		tagSets = append(tagSets, externalService.Spec.Tags)
+	}
+
+	ipam, err := NewSimpleIPAM(cidr)
+	if err != nil {
+		return nil, err
+	}
+	ipByHostname := map[string]string{}
+	if self != nil {
+		// Retrieve existing ips from self to not change already assigned ips
+		for _, outbound := range self.Spec.Networking.Outbound {
+			if outbound.Hostname != "" {
+				err := ipam.ReserveIP(outbound.Address)
+				if err != nil && !IsAddressAlreadyAllocated(err) && !IsAddressOutsideCidr(err) {
+					return nil, errors.Wrapf(err, "Failed reserving ip: %s", outbound.Address)
+				}
+				ipByHostname[outbound.Hostname] = outbound.Address
+			}
+		}
+	}
+
+	outbounds := buildOutbounds(tagSets, virtualOutbounds)
+	for _, outbound := range outbounds {
+		if _, ok := ipByHostname[outbound.Hostname]; !ok {
+			// Allocate ip for hostname
+			ip, err := ipam.AllocateIP()
+			ipByHostname[outbound.Hostname] = ip
+			if err != nil {
+				return nil, errors.Wrapf(err, "Failed allocating ip")
+			}
+		}
+		// Set the address for the hostname
+		outbound.Address = ipByHostname[outbound.Hostname]
+	}
+	return outbounds, nil
+}
+
+func buildOutbounds(tagSets []map[string]string, policies []*core_mesh.VirtualOutboundResource) []*mesh_proto.Dataplane_Networking_Outbound {
+	uniqueHostPort := map[string]*scoredOutbound{}
+	for _, tagSet := range tagSets {
+		for _, curPolicy := range policies {
+			var bestRank *mesh_proto.TagSelectorRank
+			if len(curPolicy.Selectors()) == 0 {
+				bestRank = &mesh_proto.TagSelectorRank{}
+			} else {
+				for _, selector := range curPolicy.Selectors() {
+					if len(selector.Match) == 0 {
+						bestRank = &mesh_proto.TagSelectorRank{}
+					} else {
+						tagSelector := mesh_proto.TagSelector(selector.Match)
+						if tagSelector.Matches(tagSet) {
+							r := tagSelector.Rank()
+							if bestRank == nil || r.CompareTo(*bestRank) > 0 {
+								bestRank = &r
+							}
+						}
+					}
+				}
+			}
+			if bestRank != nil {
+				r, err := newScoredOutbound(tagSet, *bestRank, curPolicy)
+				if err != nil {
+					dnsOutboundGeneratorLog.Error(err, "failed generating outbound", "tagSet", tagSet, "policy", curPolicy.GetMeta().GetName())
+				} else {
+					hostPort := r.HostPort()
+					cur := uniqueHostPort[hostPort]
+					if cur == nil || cur.Less(r) {
+						uniqueHostPort[hostPort] = r
+					}
+				}
+			}
+		}
+	}
+	rankedOutbounds := make([]*scoredOutbound, 0, len(uniqueHostPort))
+	for _, v := range uniqueHostPort {
+		rankedOutbounds = append(rankedOutbounds, v)
+	}
+	sort.SliceStable(rankedOutbounds, func(i, j int) bool {
+		return rankedOutbounds[i].Less(rankedOutbounds[j])
+	})
+
+	res := make([]*mesh_proto.Dataplane_Networking_Outbound, len(rankedOutbounds))
+	for i := range rankedOutbounds {
+		res[i] = rankedOutbounds[i].outbound
+	}
+	return res
+}
+
+type scoredOutbound struct {
+	tagSets  map[string]string
+	rank     mesh_proto.TagSelectorRank
+	policy   *core_mesh.VirtualOutboundResource
+	outbound *mesh_proto.Dataplane_Networking_Outbound
+}
+
+// Key returns a unique key for this tagSet and policy (ToOutbound call of 2 items with the same key will return the same result).
+func (s *scoredOutbound) Key() string {
+	var tags []string
+	for k, v := range s.policy.FilterTags(s.tagSets) {
+		tags = append(tags, fmt.Sprintf("%s=%s", k, v))
+	}
+	sort.Strings(tags)
+	return fmt.Sprintf("%s{%s}", s.policy.Meta.GetName(), strings.Join(tags, ","))
+}
+
+func (s *scoredOutbound) HostPort() string {
+	return fmt.Sprintf("%s:%d", s.outbound.Hostname, s.outbound.Port)
+}
+
+// Less by match inverse quality, then key
+func (s *scoredOutbound) Less(other *scoredOutbound) bool {
+	r := s.rank.CompareTo(other.rank)
+	if r == 0 {
+		if s.Key() == other.Key() {
+			return s.HostPort() < other.HostPort()
+		}
+		return s.Key() < other.Key()
+	}
+	return r < 0
+}
+
+func newScoredOutbound(tagSet map[string]string, rank mesh_proto.TagSelectorRank, policy *core_mesh.VirtualOutboundResource) (*scoredOutbound, error) {
+	s := &scoredOutbound{
+		tagSets: tagSet,
+		rank:    rank,
+		policy:  policy,
+	}
+	host, err := s.policy.EvalHost(s.tagSets)
+	if err != nil {
+		return nil, err
+	}
+	port, err := s.policy.EvalPort(s.tagSets)
+	if err != nil {
+		return nil, err
+	}
+	s.outbound = &mesh_proto.Dataplane_Networking_Outbound{
+		Port:     port,
+		Hostname: host,
+		Tags:     s.policy.FilterTags(s.tagSets),
+	}
+	return s, nil
 }
