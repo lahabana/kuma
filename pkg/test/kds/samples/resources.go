@@ -192,6 +192,16 @@ var (
 			Backend: "tracing-backend",
 		},
 	}
+	VirtualOutbound = &mesh_proto.VirtualOutbound{
+		Selectors: []*mesh_proto.Selector{{
+			Match: map[string]string{"serivce": "*"},
+		}},
+		Conf: &mesh_proto.VirtualOutbound_Conf{
+			Host:       "{{.service}}.internal",
+			Port:       "80",
+			Parameters: map[string]string{"service": mesh_proto.ServiceTag},
+		},
+	}
 	ProxyTemplate = &mesh_proto.ProxyTemplate{
 		Selectors: []*mesh_proto.Selector{{
 			Match: map[string]string{"serivce": "*"},

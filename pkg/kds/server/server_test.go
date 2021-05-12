@@ -77,6 +77,7 @@ var _ = Describe("KDS Server", func() {
 			kds_samples.TrafficPermission,
 			kds_samples.TrafficRoute,
 			kds_samples.TrafficTrace,
+			kds_samples.VirtualOutbound,
 			kds_samples.Secret,
 			kds_samples.Config,
 		}).
