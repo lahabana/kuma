@@ -32,6 +32,9 @@ func VIPOutbounds(
 	externalServices []*core_mesh.ExternalServiceResource,
 	defaultDomain string,
 ) []*mesh_proto.Dataplane_Networking_Outbound {
+	if len(vips) == 0 {
+		dnsOutboundGeneratorLog.Info("Skipping legacy generation as there are no vips")
+	}
 	type vipEntry struct {
 		ip       string
 		port     uint32
