@@ -48,12 +48,14 @@ func (b *BootstrapHandler) Handle(resp http.ResponseWriter, req *http.Request) {
 	}
 	reqParams.Host = hostname
 	logger := log.WithValues("params", reqParams)
+	logger.Info("Got bootstrap request")
 
 	config, version, err := b.Generator.Generate(req.Context(), reqParams)
 	if err != nil {
 		handleError(resp, err, logger)
 		return
 	}
+	logger.Info("Finished bootstrap generation")
 
 	bytes, err = proto.ToYAML(config)
 	if err != nil {
