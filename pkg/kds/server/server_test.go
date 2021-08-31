@@ -72,6 +72,7 @@ var _ = Describe("KDS Server", func() {
 			kds_samples.RateLimit,
 			kds_samples.Retry,
 			kds_samples.Secret,
+			kds_samples.ServiceInsights,
 			kds_samples.Timeout,
 			kds_samples.TrafficLog,
 			kds_samples.TrafficPermission,

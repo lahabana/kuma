@@ -147,7 +147,6 @@ var _ = Describe("Zone Sync", func() {
 			mesh.DataplaneInsightType:  true,
 			mesh.DataplaneOverviewType: true,
 			mesh.GatewayType:           true, // Gateways are zone-local.
-			mesh.ServiceInsightType:    true,
 			mesh.ServiceOverviewType:   true,
 			sample.TrafficRouteType:    true,
 		}

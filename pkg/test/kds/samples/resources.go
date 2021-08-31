@@ -267,6 +267,18 @@ var (
 			},
 		},
 	}
+	ServiceInsights = &mesh_proto.ServiceInsight{
+		Services: map[string]*mesh_proto.ServiceInsight_Service{
+			"kuma-1": {
+				Status: mesh_proto.ServiceInsight_Service_online,
+				Dataplanes: &mesh_proto.ServiceInsight_Service_DataplaneStat{
+					Online:  1,
+					Offline: 0,
+					Total:   1,
+				},
+			},
+		},
+	}
 	Secret = &system_proto.Secret{
 		Data: util_proto.Bytes([]byte("secret key")),
 	}

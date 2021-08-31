@@ -1400,6 +1400,7 @@ var ServiceInsightResourceTypeDescriptor = model.ResourceTypeDescriptor{
 	ReadOnly:       true,
 	AdminOnly:      false,
 	Scope:          model.ScopeMesh,
+	KDSFlags:       model.FromGlobalToZone,
 	WsPath:         "service-insights",
 	KumactlArg:     "",
 	KumactlListArg: "",
