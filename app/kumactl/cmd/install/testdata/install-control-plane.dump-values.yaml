@@ -12,7 +12,7 @@ patchSystemNamespace: true
 
 installCrdsOnUpgrade:
   # -- Whether install new CRDs before upgrade (if any were introduced with the new version of Kuma)
-  enabled: true
+  enabled: false
   # -- The `imagePullSecrets` to attach to the Service Account running CRD installation.
   # This field will be deprecated in a future release, please use .global.imagePullSecrets
   imagePullSecrets: []
