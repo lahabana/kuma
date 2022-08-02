@@ -7,9 +7,6 @@ on:
 jobs:
   upgrade-kuma:
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: kong-mesh
     steps:
       - name: Generate GitHub app token
         id: github-app-token
