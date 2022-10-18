@@ -2,6 +2,7 @@ package install
 
 import (
 	"encoding/json"
+
 	"os"
 
 	"github.com/go-logr/logr"
@@ -11,7 +12,7 @@ import (
 )
 
 func parseFileToHashMap(file string) (map[string]interface{}, error) {
-	contents, err := os.ReadFile(file)
+contents, err := os.ReadFile(file)
 	if err != nil {
 		return nil, err
 	}
