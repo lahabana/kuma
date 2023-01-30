@@ -12,7 +12,7 @@ jobs:
     outputs:
       branches: ${{ steps.generate-matrix.outputs.branches }}
     steps:
-      - name: generate-matrix
+      - id: generate-matrix
         run: |
           ACTIVE_BRANCHES=`gh api /repos/${{ github.repository }}/contents/active-branches.json --jq '.content | @base64d' | head -1`
           echo "branches=${ACTIVE_BRANCHES}" >> $GITHUB_OUTPUT
