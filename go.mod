@@ -76,7 +76,7 @@ require (
 	sigs.k8s.io/gateway-api v0.5.1
 	sigs.k8s.io/testing_frameworks v0.1.2
 	sigs.k8s.io/yaml v1.3.0
-	// github.com/kumahq/kuma v0.0.0-20230119133010-ddb0e0fc1
+// github.com/kumahq/kuma v0.0.0-20230119133010-ddb0e0fc1
 )
 
 require (
@@ -189,7 +189,6 @@ require (
 	k8s.io/klog/v2 v2.80.1 // indirect
 	sigs.k8s.io/json v0.0.0-20220713155537-f223a00ba0e2 // indirect
 	sigs.k8s.io/structured-merge-diff/v4 v4.2.3 // indirect
-	sigs.k8s.io/yaml v1.3.0 // indirect
 )
 
 replace sigs.k8s.io/gateway-api => github.com/kumahq/gateway-api v0.0.0-20221019125100-747a4fedfd7a
