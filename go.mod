@@ -76,7 +76,7 @@ require (
 	sigs.k8s.io/gateway-api v0.5.1
 	sigs.k8s.io/testing_frameworks v0.1.2
 	sigs.k8s.io/yaml v1.3.0
-	// github.com/kumahq/kuma v0.0.0-20230119133010-ddb0e0f
+	// github.com/kumahq/kuma v0.0.0-20230119133010-ddb0e0fc1
 )
 
 require (
