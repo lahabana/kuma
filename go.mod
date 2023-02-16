@@ -47,7 +47,7 @@ require (
 	github.com/spf13/cobra v1.6.1
 	github.com/spf13/viper v1.15.0
 	github.com/spiffe/go-spiffe v0.0.0-20190820222348-6adcf1eecbcc
-	github.com/testcontainers/testcontainers-go v0.15.0
+	github.com/testcontainers/testcontainers-go v0.17.0
 	go.opentelemetry.io/proto/otlp v0.19.0
 	go.uber.org/multierr v1.9.0
 	go.uber.org/zap v1.24.0
@@ -137,7 +137,7 @@ require (
 	github.com/magiconair/properties v1.8.7 // indirect
 	github.com/mailru/easyjson v0.7.7 // indirect
 	github.com/mattn/go-colorable v0.1.12 // indirect
-	github.com/mattn/go-isatty v0.0.14 // indirect
+	github.com/mattn/go-isatty v0.0.16 // indirect
 	github.com/mattn/go-zglob v0.0.2-0.20190814121620-e3c945676326 // indirect
 	github.com/matttproud/golang_protobuf_extensions v1.0.4 // indirect
 	github.com/mitchellh/copystructure v1.2.0 // indirect
