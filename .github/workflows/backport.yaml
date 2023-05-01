@@ -8,4 +8,3 @@ jobs:
     secrets:
       appId: ${{ secrets.APP_ID }}
       appPrivateKey: ${{ secrets.APP_PRIVATE_KEY }}
-      actionToken: ${{ github.token }}
