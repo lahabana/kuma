@@ -4,13 +4,13 @@ on:
     tags:
       - '*'
   pull_request_target:
-    types: [closed]
+    types: [closed, labeled]
     branches:
       - master
       - release-*
 jobs:
   notify-about-merged-pr:
-    if: github.event_name != 'pull_request_target' || github.event.pull_request.merged
+    if: github.event_name != 'pull_request_target' || (github.event.action == 'closed' && github.event.pull_request.merged)
     name: "Notify about merged PR"
     runs-on: ubuntu-latest
     steps:
@@ -41,3 +41,11 @@ jobs:
                 pr,
               },
             });
+  maybe-backport:
+    uses: kumahq/.github/.github/workflows/wfc_backport.yml@backportPR
+    with:
+      secrets:
+        appId: ${{ secrets.APP_ID }}
+        appSecretKey: ${{ secrets.APP_PRIVATE_KEY }}
+        actionToken: ${{ github.token }}
+
