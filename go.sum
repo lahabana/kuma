@@ -1216,7 +1216,11 @@ github.com/rogpeppe/go-internal v1.1.0/go.mod h1:M8bDsm7K2OlrFYOpmOWEs/qY81heoFR
 github.com/rogpeppe/go-internal v1.2.2/go.mod h1:M8bDsm7K2OlrFYOpmOWEs/qY81heoFRclV5y23lUDJ4=
 github.com/rogpeppe/go-internal v1.3.0/go.mod h1:M8bDsm7K2OlrFYOpmOWEs/qY81heoFRclV5y23lUDJ4=
 <<<<<<< HEAD
+<<<<<<< HEAD
 github.com/rogpeppe/go-internal v1.6.1 h1:/FiVV8dS/e+YqF2JvO3yXRFbBLTIuSDkuC7aBOAvL+k=
+=======
+github.com/rogpeppe/go-internal v1.10.0 h1:TMyTOH3F/DB16zRVcYyreMH6GnZZrwQVAoYjRBZyWFQ=
+>>>>>>> ba22b1180 (chore(deps): bump k8s.io/kubectl from 0.26.3 to 0.27.1 (#114))
 =======
 github.com/rogpeppe/go-internal v1.10.0 h1:TMyTOH3F/DB16zRVcYyreMH6GnZZrwQVAoYjRBZyWFQ=
 >>>>>>> ba22b1180 (chore(deps): bump k8s.io/kubectl from 0.26.3 to 0.27.1 (#114))
@@ -2156,11 +2160,14 @@ k8s.io/api v0.20.4/go.mod h1:++lNL1AJMkDymriNniQsWRkMDzRaX2Y/POTUi8yvqYQ=
 k8s.io/api v0.20.6/go.mod h1:X9e8Qag6JV/bL5G6bU8sdVRltWKmdHsFUGS3eVndqE8=
 k8s.io/api v0.22.5/go.mod h1:mEhXyLaSD1qTOf40rRiKXkc+2iCem09rWLlFwhCEiAs=
 <<<<<<< HEAD
+<<<<<<< HEAD
 k8s.io/api v0.26.1 h1:f+SWYiPd/GsiWwVRz+NbFyCgvv75Pk9NK6dlkZgpCRQ=
 k8s.io/api v0.26.1/go.mod h1:xd/GBNgR0f707+ATNyPmQ1oyKSgndzXij81FzWGsejg=
 k8s.io/apiextensions-apiserver v0.26.1 h1:cB8h1SRk6e/+i3NOrQgSFij1B2S0Y0wDoNl66bn8RMI=
 k8s.io/apiextensions-apiserver v0.26.1/go.mod h1:AptjOSXDGuE0JICx/Em15PaoO7buLwTs0dGleIHixSM=
 =======
+=======
+>>>>>>> ba22b1180 (chore(deps): bump k8s.io/kubectl from 0.26.3 to 0.27.1 (#114))
 k8s.io/api v0.27.1 h1:Z6zUGQ1Vd10tJ+gHcNNNgkV5emCyW+v2XTmn+CLjSd0=
 k8s.io/api v0.27.1/go.mod h1:z5g/BpAiD+f6AArpqNjkY+cji8ueZDU/WV1jcj5Jk4E=
 k8s.io/apiextensions-apiserver v0.26.3 h1:5PGMm3oEzdB1W/FTMgGIDmm100vn7IaUP5er36dB+YE=
@@ -2172,8 +2179,13 @@ k8s.io/apimachinery v0.20.6/go.mod h1:ejZXtW1Ra6V1O5H8xPBGz+T3+4gfkTCeExAHKU57MA
 k8s.io/apimachinery v0.22.1/go.mod h1:O3oNtNadZdeOMxHFVxOreoznohCpy0z6mocxbZr7oJ0=
 k8s.io/apimachinery v0.22.5/go.mod h1:xziclGKwuuJ2RM5/rSFQSYAj0zdbci3DH8kj+WvyN0U=
 <<<<<<< HEAD
+<<<<<<< HEAD
 k8s.io/apimachinery v0.26.1 h1:8EZ/eGJL+hY/MYCNwhmDzVqq2lPl3N3Bo8rvweJwXUQ=
 k8s.io/apimachinery v0.26.1/go.mod h1:tnPmbONNJ7ByJNz9+n9kMjNP8ON+1qoAIIC70lztu74=
+=======
+k8s.io/apimachinery v0.27.1 h1:EGuZiLI95UQQcClhanryclaQE6xjg1Bts6/L3cD7zyc=
+k8s.io/apimachinery v0.27.1/go.mod h1:5ikh59fK3AJ287GUvpUsryoMFtH9zj/ARfWCo3AyXTM=
+>>>>>>> ba22b1180 (chore(deps): bump k8s.io/kubectl from 0.26.3 to 0.27.1 (#114))
 =======
 k8s.io/apimachinery v0.27.1 h1:EGuZiLI95UQQcClhanryclaQE6xjg1Bts6/L3cD7zyc=
 k8s.io/apimachinery v0.27.1/go.mod h1:5ikh59fK3AJ287GUvpUsryoMFtH9zj/ARfWCo3AyXTM=
@@ -2187,8 +2199,13 @@ k8s.io/client-go v0.20.4/go.mod h1:LiMv25ND1gLUdBeYxBIwKpkSC5IsozMMmOOeSJboP+k=
 k8s.io/client-go v0.20.6/go.mod h1:nNQMnOvEUEsOzRRFIIkdmYOjAZrC8bgq0ExboWSU1I0=
 k8s.io/client-go v0.22.5/go.mod h1:cs6yf/61q2T1SdQL5Rdcjg9J1ElXSwbjSrW2vFImM4Y=
 <<<<<<< HEAD
+<<<<<<< HEAD
 k8s.io/client-go v0.26.1 h1:87CXzYJnAMGaa/IDDfRdhTzxk/wzGZ+/HUQpqgVSZXU=
 k8s.io/client-go v0.26.1/go.mod h1:IWNSglg+rQ3OcvDkhY6+QLeasV4OYHDjdqeWkDQZwGE=
+=======
+k8s.io/client-go v0.27.1 h1:oXsfhW/qncM1wDmWBIuDzRHNS2tLhK3BZv512Nc59W8=
+k8s.io/client-go v0.27.1/go.mod h1:f8LHMUkVb3b9N8bWturc+EDtVVVwZ7ueTVquFAJb2vA=
+>>>>>>> ba22b1180 (chore(deps): bump k8s.io/kubectl from 0.26.3 to 0.27.1 (#114))
 =======
 k8s.io/client-go v0.27.1 h1:oXsfhW/qncM1wDmWBIuDzRHNS2tLhK3BZv512Nc59W8=
 k8s.io/client-go v0.27.1/go.mod h1:f8LHMUkVb3b9N8bWturc+EDtVVVwZ7ueTVquFAJb2vA=
@@ -2199,8 +2216,13 @@ k8s.io/component-base v0.20.4/go.mod h1:t4p9EdiagbVCJKrQ1RsA5/V4rFQNDfRlevJajlGw
 k8s.io/component-base v0.20.6/go.mod h1:6f1MPBAeI+mvuts3sIdtpjljHWBQ2cIy38oBIWMYnrM=
 k8s.io/component-base v0.22.5/go.mod h1:VK3I+TjuF9eaa+Ln67dKxhGar5ynVbwnGrUiNF4MqCI=
 <<<<<<< HEAD
+<<<<<<< HEAD
 k8s.io/component-base v0.26.1 h1:4ahudpeQXHZL5kko+iDHqLj/FSGAEUnSVO0EBbgDd+4=
 k8s.io/component-base v0.26.1/go.mod h1:VHrLR0b58oC035w6YQiBSbtsf0ThuSwXP+p5dD/kAWU=
+=======
+k8s.io/component-base v0.27.1 h1:kEB8p8lzi4gCs5f2SPU242vOumHJ6EOsOnDM3tTuDTM=
+k8s.io/component-base v0.27.1/go.mod h1:UGEd8+gxE4YWoigz5/lb3af3Q24w98pDseXcXZjw+E0=
+>>>>>>> ba22b1180 (chore(deps): bump k8s.io/kubectl from 0.26.3 to 0.27.1 (#114))
 =======
 k8s.io/component-base v0.27.1 h1:kEB8p8lzi4gCs5f2SPU242vOumHJ6EOsOnDM3tTuDTM=
 k8s.io/component-base v0.27.1/go.mod h1:UGEd8+gxE4YWoigz5/lb3af3Q24w98pDseXcXZjw+E0=
@@ -2225,13 +2247,19 @@ k8s.io/kube-openapi v0.0.0-20201113171705-d219536bb9fd/go.mod h1:WOJ3KddDSol4tAG
 k8s.io/kube-openapi v0.0.0-20210421082810-95288971da7e/go.mod h1:vHXdDvt9+2spS2Rx9ql3I8tycm3H9FDfdUoIuKCefvw=
 k8s.io/kube-openapi v0.0.0-20211109043538-20434351676c/go.mod h1:vHXdDvt9+2spS2Rx9ql3I8tycm3H9FDfdUoIuKCefvw=
 <<<<<<< HEAD
+<<<<<<< HEAD
 k8s.io/kube-openapi v0.0.0-20221012153701-172d655c2280 h1:+70TFaan3hfJzs+7VK2o+OGxg8HsuBr/5f6tVAjDu6E=
 k8s.io/kube-openapi v0.0.0-20221012153701-172d655c2280/go.mod h1:+Axhij7bCpeqhklhUTe3xmOn6bWxolyZEeyaFpjGtl4=
 =======
+=======
+>>>>>>> ba22b1180 (chore(deps): bump k8s.io/kubectl from 0.26.3 to 0.27.1 (#114))
 k8s.io/kube-openapi v0.0.0-20230308215209-15aac26d736a h1:gmovKNur38vgoWfGtP5QOGNOA7ki4n6qNYoFAgMlNvg=
 k8s.io/kube-openapi v0.0.0-20230308215209-15aac26d736a/go.mod h1:y5VtZWM9sHHc2ZodIH/6SHzXj+TPU5USoA8lcIeKEKY=
 k8s.io/kubectl v0.27.1 h1:9T5c5KdpburYiW8XKQSH0Uly1kMNE90aGSnbYUZNdcA=
 k8s.io/kubectl v0.27.1/go.mod h1:QsAkSmrRsKTPlAFzF8kODGDl4p35BIwQnc9XFhkcsy8=
+<<<<<<< HEAD
+>>>>>>> ba22b1180 (chore(deps): bump k8s.io/kubectl from 0.26.3 to 0.27.1 (#114))
+=======
 >>>>>>> ba22b1180 (chore(deps): bump k8s.io/kubectl from 0.26.3 to 0.27.1 (#114))
 k8s.io/kubernetes v1.13.0/go.mod h1:ocZa8+6APFNC2tX1DZASIbocyYT5jHzqFVsY5aoB7Jk=
 k8s.io/utils v0.0.0-20201110183641-67b214c5f920/go.mod h1:jPW/WVKK9YHAvNhRxK0md/EJ228hCsBRufyofKtW8HA=

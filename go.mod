@@ -125,10 +125,13 @@ require (
 	github.com/fsnotify/fsnotify v1.6.0 // indirect
 	github.com/go-errors/errors v1.4.2 // indirect
 <<<<<<< HEAD
+<<<<<<< HEAD
 	github.com/go-openapi/jsonpointer v0.19.5 // indirect
 	github.com/go-openapi/jsonreference v0.20.0 // indirect
 	github.com/go-openapi/swag v0.21.1 // indirect
 =======
+=======
+>>>>>>> ba22b1180 (chore(deps): bump k8s.io/kubectl from 0.26.3 to 0.27.1 (#114))
 	github.com/go-openapi/jsonpointer v0.19.6 // indirect
 	github.com/go-openapi/jsonreference v0.20.1 // indirect
 	github.com/go-openapi/swag v0.22.3 // indirect
@@ -211,10 +214,13 @@ require (
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 	gotest.tools/v3 v3.4.0 // indirect
 <<<<<<< HEAD
+<<<<<<< HEAD
 	k8s.io/component-base v0.26.1 // indirect
 	k8s.io/klog/v2 v2.80.1 // indirect
 	sigs.k8s.io/json v0.0.0-20220713155537-f223a00ba0e2 // indirect
 =======
+=======
+>>>>>>> ba22b1180 (chore(deps): bump k8s.io/kubectl from 0.26.3 to 0.27.1 (#114))
 	k8s.io/component-base v0.27.1 // indirect
 	sigs.k8s.io/json v0.0.0-20221116044647-bc3834ca7abd // indirect
 >>>>>>> ba22b1180 (chore(deps): bump k8s.io/kubectl from 0.26.3 to 0.27.1 (#114))
