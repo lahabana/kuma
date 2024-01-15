@@ -18,7 +18,7 @@ jobs:
       - run: |
           bom generate -n https://kuma.io  -o sbom.json  --format json .
           jq '.packages[] | with_entries(select([.key] | inside(["name", "versionInfo", "licenseConcluded"])))' sbom.json > licenses.json
-      - uses: actions/upload-artifact@c7d193f32edcb7bfad88892161225aeda64e9392 # v4.0.0
+      - uses: actions/upload-artifact@1eb3cb2b3e0f29609092a73eb033bb759a334595 # v4.1.0
         with:
           name: sbom
           path: |
