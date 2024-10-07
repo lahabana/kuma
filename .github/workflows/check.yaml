@@ -17,6 +17,7 @@ jobs:
         if: github.event.pull_request.author != 'dependabot'
         uses: marocchino/sticky-pull-request-comment@44e0bad81007ecff41ba26d1cbf49a0267d28e9d # v2.9.0
         with:
+          GITHUB_TOKEN: ${{ github.token }}
           header: PR reviewer checklist
           only_create: true
           message: |
