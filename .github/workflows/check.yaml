@@ -14,13 +14,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Add checklist comment
-        if: github.event.pull_request.author != 'dependabot'
+        if: github.event.pull_request.author != 'app/dependabot'
         uses: marocchino/sticky-pull-request-comment@44e0bad81007ecff41ba26d1cbf49a0267d28e9d # v2.9.0
         with:
-          GITHUB_TOKEN: ${{ github.token }}
           header: PR reviewer checklist
           only_create: true
           message: |
+            ## Reviewer Checklist
             :mag: Each of these sections need to be checked by the reviewer of the PR :mag::
             If something doesn't apply please check the box and add a justification if the reason is non obvious.
 
