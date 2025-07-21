@@ -1,4 +1,5 @@
 [![][kuma-logo]][kuma-url]
+:wq
 
 **Builds**
 
